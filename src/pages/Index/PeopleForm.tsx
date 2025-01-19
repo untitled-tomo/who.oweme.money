@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import styles from './PeopleForm.module.css'
 
 interface PeopleFormProps {
     setNames: React.Dispatch<React.SetStateAction<string[]>>;
+    nextStep: () => void;
   }
 
-const PeopleForm: React.FC<PeopleFormProps> = ({ setNames }) => {
+const PeopleForm: React.FC<PeopleFormProps> = ({ setNames, nextStep }) => {
     const [numPeople, setNumPeople] = useState(0);
     const [localNames, setLocalNames] = useState<string[]>([]);
 
@@ -27,9 +27,11 @@ const PeopleForm: React.FC<PeopleFormProps> = ({ setNames }) => {
     e.preventDefault();
     setNames(localNames);
     console.log('Submitted names:', localNames);
+    nextStep();
   };
 
   return (
+    <>
     <form onSubmit={handleSubmit}>
       <div>
         <label>
@@ -47,6 +49,7 @@ const PeopleForm: React.FC<PeopleFormProps> = ({ setNames }) => {
       ))}
       <button type="submit">Submit</button>
     </form>
+    </>
   );
 };
 
