@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 
 interface PeopleFormProps {
-    setNames: React.Dispatch<React.SetStateAction<string[]>>;
-    nextStep: () => void;
-  }
+  setNames: React.Dispatch<React.SetStateAction<string[]>>;
+  nextStep: () => void;
+}
 
 const PeopleForm: React.FC<PeopleFormProps> = ({ setNames, nextStep }) => {
-    const [numPeople, setNumPeople] = useState(0);
-    const [localNames, setLocalNames] = useState<string[]>([]);
+  const [numPeople, setNumPeople] = useState(0);
+  const [localNames, setLocalNames] = useState<string[]>([]);
 
   const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const num = parseInt(e.target.value, 10);
@@ -31,25 +31,21 @@ const PeopleForm: React.FC<PeopleFormProps> = ({ setNames, nextStep }) => {
   };
 
   return (
-    <>
     <form onSubmit={handleSubmit}>
-      <div>
-        <label>
-          Number of People:
-          <input type="number" value={numPeople} onChange={handleNumPeopleChange}  />
-        </label>
-      </div>
+        <div className="input-group mb-3">
+          <span className="input-group-text" id="basic-addon1">Number of People:</span>
+          <input type="number" value={numPeople} onChange={handleNumPeopleChange} className="form-control" placeholder="Number of People" aria-label="Username" aria-describedby="basic-addon1" />
+        </div>
       {localNames.map((name, index) => (
         <div key={index}>
-          <label>
-            Name {index + 1}:
-            <input type="text" value={name} onChange={(e) => handleNameChange(index, e)} />
-          </label>
+          <div className="input-group mb-3 w-50">
+          <span className="input-group-text" id="basic-addon1">Name {index + 1}:</span>
+          <input type="text" value={name} onChange={(e) => handleNameChange(index, e)}  className="form-control" placeholder="Name" aria-label="Username" aria-describedby="basic-addon1" />
+        </div>
         </div>
       ))}
       <button type="submit">Submit</button>
     </form>
-    </>
   );
 };
 

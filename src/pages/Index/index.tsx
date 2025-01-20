@@ -69,7 +69,7 @@ const Index: React.FC<Props> = memo(() => {
 
 
   return (
-    <>
+    <div>
       <Steps
         type="navigation"
         current={current}
@@ -111,7 +111,7 @@ const Index: React.FC<Props> = memo(() => {
           </Button>
         )}
       </div>
-    </>
+    </div>
   );
 });
 
