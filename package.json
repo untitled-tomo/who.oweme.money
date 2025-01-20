@@ -23,7 +23,7 @@
     "clean": "rimraf node_modules pnpm-lock.yaml dist",
     "validate": "./scripts/validate",
     "remove:tailwind": "scripts/remove_tailwind.js",
-    "prepare": "husky"
+    "prepare": "husky && husky install"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
@@ -61,7 +61,7 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.2.3",
     "eslint-plugin-react-hooks": "^5.1.0",
-    "husky": "^9.1.7",
+    "husky": "^8.0.0",
     "jsdom": "^26.0.0",
     "lint-staged": "^15.4.1",
     "msw": "^2.7.0",
