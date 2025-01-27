@@ -11,13 +11,13 @@ const PeopleForm = forwardRef<{ validate: () => boolean }, PeopleFormProps>(
     const [numPeople, setNumPeople] = useState(3);
     const [localNames, setLocalNames] = useState<string[]>(['Ram', 'Sam', 'Pam']);
 
-    const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement >) => {
       const num = Math.max(0, parseInt(e.target.value, 10) || 0); // Avoid negative numbers
       setNumPeople(num);
       setLocalNames(Array(num).fill(''));
     };
 
-    const handleNameChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleNameChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const newNames = [...localNames];
       newNames[index] = e.target.value;
       setLocalNames(newNames);
