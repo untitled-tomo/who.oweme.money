@@ -8,8 +8,8 @@ interface PeopleFormProps {
 
 const PeopleForm = forwardRef<{ validate: () => boolean }, PeopleFormProps>(
   ({ setNames }, ref) => {
-    const [numPeople, setNumPeople] = useState(0);
-    const [localNames, setLocalNames] = useState<string[]>([]);
+    const [numPeople, setNumPeople] = useState(3);
+    const [localNames, setLocalNames] = useState<string[]>(['Ram', 'Sam', 'Pam']);
 
     const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const num = Math.max(0, parseInt(e.target.value, 10) || 0); // Avoid negative numbers

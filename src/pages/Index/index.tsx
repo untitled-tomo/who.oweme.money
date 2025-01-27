@@ -33,9 +33,10 @@ const Index: React.FC = () => {
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      overflow: 'auto', 
+      // overflow: 'auto', 
+      maxWidth: '80vw'
     }}>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 , bgcolor: 'red'}}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 ,  width: '100%', }}>
         <Stepper activeStep={current}sx={{
             alignItems: 'center',
             width: '100%', maxWidth: 600

@@ -10,7 +10,6 @@ import {
   IconButton,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { red } from '@mui/material/colors';
 
 interface MenuTableProps {
   menu: { name: string; amount: number; peopleInvolved: string[] }[];
@@ -21,8 +20,8 @@ interface MenuTableProps {
 
 const MenuTable: React.FC<MenuTableProps> = ({ menu, people, onEdit, onDelete }) => {
   return (
-    <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 4 , bgcolor: 'red',}}>
-      <Table>
+    <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 4 }}>
+      <Table stickyHeader>
         <TableHead>
           <TableRow>
             <TableCell>Item Name</TableCell>

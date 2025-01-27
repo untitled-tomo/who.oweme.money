@@ -23,6 +23,7 @@ import {
 import { Delete, Edit } from '@mui/icons-material';
 import MenuTable from '@/components/Menu/MenuTable';
 import MenuForm from '@/components/Menu/MenuForm';
+import TaxBreakdown from '@/components/Menu/TaxBreakdown';
 
 interface MenuItem {
   name: string;
@@ -111,7 +112,7 @@ const MenuMain: React.FC<MenuMainProps> = ({ people }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 , overflowX:'auto', overflowY:'auto'}}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <MenuTable menu={menu} people={people} onEdit={handleEditItem} onDelete={handleDeleteItem} />
       <MenuForm onSubmit={handleAddOrEditItem} people={people} />
       {/* <TaxBreakdown menu={menu} taxRate={taxRate} people={people} /> */}
