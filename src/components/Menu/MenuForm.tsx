@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   TextField,
@@ -15,12 +15,21 @@ import {
 interface MenuFormProps {
   onSubmit: (name: string, amount: number, peopleInvolved: string[]) => void;
   people: string[];
+  editingItem?: { name: string; amount: number; peopleInvolved: string[] } | null;
 }
 
-const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, people }) => {
+const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, people, editingItem }) => {
   const [name, setName] = useState('');
   const [amount, setAmount] = useState<number | string>('');
   const [peopleInvolved, setPeopleInvolved] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (editingItem) {
+      setName(editingItem.name);
+      setAmount(editingItem.amount);
+      setPeopleInvolved(editingItem.peopleInvolved);
+    }
+  }, [editingItem]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +46,7 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, people }) => {
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: 'auto', mb: 4 }}>
       <Typography variant="h6" mb={2}>
-        Add Menu Item
+        {editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
       </Typography>
       <TextField
         label="Item Name"
@@ -74,7 +83,7 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, people }) => {
         </Select>
       </FormControl>
       <Button type="submit" variant="contained" color="primary" fullWidth>
-        Save
+        {editingItem ? 'Update' : 'Save'}
       </Button>
     </Box>
   );
