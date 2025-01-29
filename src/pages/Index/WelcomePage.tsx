@@ -19,10 +19,10 @@ const WelcomePage: React.FC<{ navigate: (path: string) => void }> = ({ navigate 
       <Typography variant="h4" gutterBottom>
         Welcome to WhoOweMeMoney! 🍽️
       </Typography>
-      <Typography variant="body1" paragraph>
+      <Typography variant="body1">
         Ever had a tough time splitting the bill after a meal with friends? Worry no more!
       </Typography>
-      <Typography variant="body2" paragraph>
+      <Typography variant="body2">
         Here's how to make bill-splitting as easy as pie:
         <ul style={{ textAlign: 'left', margin: '20px auto', maxWidth: '300px' }}>
           <li>📋 Start by entering your group size and friends' names.</li>

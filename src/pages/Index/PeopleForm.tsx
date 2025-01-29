@@ -2,31 +2,38 @@ import React, { useState, useImperativeHandle, forwardRef } from 'react';
 import { Box, TextField, Typography, Grid, InputAdornment } from '@mui/material';
 
 interface PeopleFormProps {
-  setNames: React.Dispatch<React.SetStateAction<string[]>>;
+  setNames: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   ref?: React.Ref<{ validate: () => boolean }>;
 }
 
 const PeopleForm = forwardRef<{ validate: () => boolean }, PeopleFormProps>(
   ({ setNames }, ref) => {
     const [numPeople, setNumPeople] = useState(3);
-    const [localNames, setLocalNames] = useState<string[]>(['Ram', 'Sam', 'Pam']);
+    const [localNames, setLocalNames] = useState<Record<string, string>>({
+      p_1: 'Ram',
+      p_2: 'Sam',
+      p_3: 'Pam',
+    });
 
-    const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement >) => {
+    const handleNumPeopleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const num = Math.max(0, parseInt(e.target.value, 10) || 0); // Avoid negative numbers
       setNumPeople(num);
-      setLocalNames(Array(num).fill(''));
+      const newNames: Record<string, string> = {};
+      for (let i = 1; i <= num; i++) {
+        newNames[`p_${i}`] = localNames[`p_${i}`] || '';
+      }
+      setLocalNames(newNames);
     };
 
-    const handleNameChange = (index: number, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const newNames = [...localNames];
-      newNames[index] = e.target.value;
+    const handleNameChange = (id: string, e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const newNames = { ...localNames, [id]: e.target.value };
       setLocalNames(newNames);
     };
 
     // Validation Function
     const validate = () => {
       if (numPeople < 2) return false; // Minimum 2 people required
-      if (localNames.some((name) => name.trim() === '')) return false; // No empty names allowed
+      if (Object.values(localNames).some((name) => name.trim() === '')) return false; // No empty names allowed
       setNames(localNames); // Set names if valid
       return true;
     };
@@ -57,12 +64,12 @@ const PeopleForm = forwardRef<{ validate: () => boolean }, PeopleFormProps>(
         />
 
         <Grid container spacing={2}>
-          {localNames.map((name, index) => (
-            <Grid item xs={12} sm={6} key={index}>
+          {Object.keys(localNames).map((id, index) => (
+            <Grid item xs={12} sm={6} key={id}>
               <TextField
                 label={`Friend ${index + 1}`}
-                value={name}
-                onChange={(e) => handleNameChange(index, e)}
+                value={localNames[id]}
+                onChange={(e) => handleNameChange(id, e)}
                 fullWidth
                 variant="outlined"
                 placeholder="Enter name"
