@@ -1,9 +1,9 @@
 import path from 'node:path'
 
-import EnvironmentPlugin from 'vite-plugin-environment'
+// import EnvironmentPlugin from 'vite-plugin-environment'
 import { defineConfig } from 'vitest/config'
 export default defineConfig({
-  plugins: [EnvironmentPlugin(['REACT_APP_TEXT']) as any],
+  // plugins: [EnvironmentPlugin(['REACT_APP_TEXT']) as any],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
