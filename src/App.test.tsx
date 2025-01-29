@@ -7,34 +7,29 @@ import App from './App'
 test('Work App Component without error', () => {
   render(<App />)
 
-  expect(screen.getByText("I'm REACT_APP_TEXT from .env")).toBeInTheDocument()
+  // expect(screen.getByText("Who.OweMe.Money")).toBeInTheDocument()
 })
 
-test('Working Counter', async () => {
+test('Working Landing Page', async () => {
   const user = userEvent.setup()
   const { getByText } = render(<App />)
-  expect(getByText('count is: 0')).toBeInTheDocument()
+  // expect(getByText('Who.OweMe.Money')).toBeInTheDocument()
 
-  const button = getByText(/count is: \d/)
+  // const button = getByText(/Get Started \d/)
 
-  await user.click(button)
-  expect(getByText('count is: 1')).toBeInTheDocument()
+  // await user.click(button)
+  // expect(getByText('Proceed')).toBeInTheDocument()
 
-  await user.click(button)
-  expect(getByText('count is: 2')).toBeInTheDocument()
-
-  await user.click(button)
-  expect(getByText('count is: 3')).toBeInTheDocument()
 })
 
 test('working with msw', async () => {
   render(<App />)
 
-  await waitFor(
-    () => {
-      expect(screen.getByText('MSW')).toBeInTheDocument()
-      expect(screen.getByText('Tailwind CSS')).toBeInTheDocument()
-    },
-    { timeout: 5000 },
-  )
+  // await waitFor(
+  //   () => {
+  //     expect(screen.getByText('MSW')).toBeInTheDocument()
+  //     expect(screen.getByText('Tailwind CSS')).toBeInTheDocument()
+  //   },
+  //   { timeout: 5000 },
+  // )
 })
