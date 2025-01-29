@@ -2,6 +2,11 @@ import React, { useState, useRef } from 'react';
 import { Button, Stepper, Step, StepLabel, Alert, Box, Typography } from '@mui/material';
 import PeopleForm from './PeopleForm';
 import MenuMain from './MenuMain';
+interface MenuItem {
+  name: string;
+  amount: number;
+  peopleInvolved: string[];
+}
 
 const Index: React.FC = () => {
   const [names, setNames] = useState<string[]>([]);
@@ -27,6 +32,8 @@ const Index: React.FC = () => {
   };
 
   const prev = () => setCurrent((prev) => prev - 1);
+  const [menu, setMenu] = useState<MenuItem[]>([]);
+  const [taxRate, setTaxRate] = useState<number>(10); // Example tax rate
 
   return (
     <Box sx={{
@@ -34,7 +41,7 @@ const Index: React.FC = () => {
       flexDirection: 'column',
       height: '100%',
       // overflow: 'auto', 
-      maxWidth: '80vw'
+      maxWidth: '90vw'
     }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 ,  width: '100%', }}>
         <Stepper activeStep={current}sx={{
@@ -61,7 +68,7 @@ const Index: React.FC = () => {
         {current === 0 && (
           <PeopleForm ref={peopleFormRef} setNames={setNames} />
         )}
-        {current === 1 && <MenuMain people={names} />}
+        {current === 1 && <MenuMain people={names} menu={menu} setMenu={setMenu} taxRate={taxRate} setTaxRate={setTaxRate} />}
         {current === 2 && (
           <Typography variant="h6">Summary content here.</Typography>
         )}

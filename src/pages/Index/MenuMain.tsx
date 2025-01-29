@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import {
   Box,
   Dialog,
@@ -19,16 +19,18 @@ interface MenuItem {
 
 interface MenuMainProps {
   people: string[];
+  menu : MenuItem[];
+  setMenu : Dispatch<SetStateAction<MenuItem[]>>;
+  taxRate : number;
+  setTaxRate : Dispatch<SetStateAction<number>>;
 }
 
-const MenuMain: React.FC<MenuMainProps> = ({ people }) => {
-  const [menu, setMenu] = useState<MenuItem[]>([]);
+const MenuMain: React.FC<MenuMainProps> = ({ people , menu , setMenu , taxRate, setTaxRate}) => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
-  const [taxRate, setTaxRate] = useState<number>(10); // Example tax rate
 
   const handleAddOrEditItem = (name: string, amount: number, peopleInvolved: string[]) => {
     const newItem: MenuItem = { name, amount, peopleInvolved };
@@ -74,7 +76,7 @@ const MenuMain: React.FC<MenuMainProps> = ({ people }) => {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       <MenuTable menu={menu} people={people} onEdit={handleEditItem} onDelete={handleDeleteItem} />
-      <TaxBreakdown menu={menu} taxRate={taxRate} people={people} />
+      <TaxBreakdown menu={menu} taxRate={taxRate} people={people} setTaxRate={setTaxRate} />
 
       {/* Add/Edit Dialog */}
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>

@@ -8,8 +8,8 @@ import Notfound from './pages/Notfound';
 const router = createBrowserRouter([
   {
     path: '/',
-    element:
-    <LandingPage navigate={(path) => router.navigate(path)} // Pass the navigation function here
+    element:       <WelcomePage
+    navigate={(path) => router.navigate(path)} // Same here
   />
   },
   {
