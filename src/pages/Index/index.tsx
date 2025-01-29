@@ -1,118 +1,97 @@
-import React, { memo, useState } from 'react';
-import { Button, message, Steps, theme, Alert } from 'antd';
+import React, { useState, useRef } from 'react';
+import { Button, Stepper, Step, StepLabel, Alert, Box, Typography } from '@mui/material';
 import PeopleForm from './PeopleForm';
-import MenuForm from './MenuForm';
+import MenuMain from './MenuMain';
 
-interface Props {}
-
-const AlertStore = {
-  MIN_2_PEOPLE: "Please enter at least 2 people",
-  EMPTY_NAME: "Names cannot be empty",
-  DUPLICATE_NAME: "Duplicate names are not allowed: ",
-};
-
-const Index: React.FC<Props> = memo(() => {
+const Index: React.FC = () => {
   const [names, setNames] = useState<string[]>([]);
   const [current, setCurrent] = useState(0);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-  const { token } = theme.useToken();
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
+  const steps = ['People', 'Menu', 'Summary'];
+
+  // Ref for PeopleForm
+  const peopleFormRef = useRef<{ validate: () => boolean } | null>(null);
 
   const next = () => {
     if (current === 0) {
-      if (names.length < 2) {
-        setAlertMessage(AlertStore.MIN_2_PEOPLE);
-        setAlertVisible(true);
-        return;
-      }
-      if (names.some(name => name.trim() === '')) {
-        setAlertMessage(AlertStore.EMPTY_NAME);
-        setAlertVisible(true);
-        return;
-      }
-      const nameCount = names.reduce((acc, name) => {
-        const trimmedName = name.trim().toLowerCase();
-        acc[trimmedName] = (acc[trimmedName] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-      const duplicates = Object.keys(nameCount).filter(name => nameCount[name] > 1);
-      if (duplicates.length > 0) {
-        setAlertMessage(`${AlertStore.DUPLICATE_NAME} ${duplicates.join(', ')}`);
-        setAlertVisible(true);
+      // Validate PeopleForm
+      const isValid = peopleFormRef.current?.validate();
+      if (!isValid) {
+        setAlertMessage('Please ensure you have entered at least 2 people with valid names.');
         return;
       }
     }
-    setAlertVisible(false);
-    setCurrent(current + 1);
+    setAlertMessage(null);
+    setCurrent((prev) => prev + 1);
   };
 
-  const prev = () => {
-    setCurrent(current - 1);
-  };
-
-  const steps = [
-    {
-      title: 'People',
-      content: <PeopleForm setNames={setNames} nextStep={() => next()} />,
-    },
-    {
-      title: 'Menu',
-      content: <MenuForm people={names} />,
-    },
-    {
-      title: 'Last',
-      content: 'Last-content',
-    },
-  ];
-  const items = steps.map((item) => ({ key: item.title, title: item.title }));
-
+  const prev = () => setCurrent((prev) => prev - 1);
 
   return (
-    <div>
-      <Steps
-        type="navigation"
-        current={current}
-        items={items}
-        direction="horizontal"
-      />
-
-      {alertVisible && (
-        <Alert
-          message="Error"
-          description={alertMessage}
-          type="error"
-          showIcon
-          style={{ marginBottom: 16 }}
-          closable
-          onClose={() => setAlertVisible(false)}
-        />
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      // overflow: 'auto', 
+      maxWidth: '80vw'
+    }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 ,  width: '100%', }}>
+        <Stepper activeStep={current}sx={{
+            alignItems: 'center',
+            width: '100%', maxWidth: 600
+            
+          }}>
+          {steps.map((label) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+            </Step>
+          ))}
+        
+        </Stepper>
+      </Box>
+      {alertMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {alertMessage}
+        </Alert>
       )}
 
-      <div>{steps[current].content}</div>
-      <div>
-        {current < steps.length - 1 && (
-          <Button
-            type="primary"
-            onClick={() => next()}
-            disabled={current === 0 && names.length < 2}
-          >
-            Next
-          </Button>
+
+      <Box sx={{ flex: 1, overflow: 'auto' }}>
+        {current === 0 && (
+          <PeopleForm ref={peopleFormRef} setNames={setNames} />
         )}
-        {current === steps.length - 1 && (
-          <Button type="primary" onClick={() => message.success('Processing complete!')}>
-            Done
-          </Button>
+        {current === 1 && <MenuMain people={names} />}
+        {current === 2 && (
+          <Typography variant="h6">Summary content here.</Typography>
         )}
+      </Box>
+
+      <Box sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          mt: 3,
+        }}>
         {current > 0 && (
-          <Button style={{ margin: '0 8px' }} onClick={() => prev()}>
+          <Button variant="outlined" onClick={prev} sx={{ mr: 2 }}>
             Previous
           </Button>
         )}
-      </div>
-    </div>
+        {current < steps.length - 1 ? (
+          <Button variant="contained" color="primary" onClick={next}>
+            Next
+          </Button>
+        ) : (
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => alert('All steps complete!')}
+          >
+            Done
+          </Button>
+        )}
+      </Box>
+    </Box>
   );
-});
-
+};
 export default Index;

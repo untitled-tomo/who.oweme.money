@@ -1,80 +1,43 @@
-// import type { PropsWithChildren } from 'react'
-// import React from 'react'
-// import { Flex, Layout as AntLayout } from 'antd'
-// // import { Col, Row } from 'antd';
-
-// import styles from './Layout.module.css'
-// const { Header, Footer, Sider, Content } = AntLayout
-
-// const Layout: React.FC<PropsWithChildren> = ({ children, ...rest }) => {
-//   return (
-//     <AntLayout className={styles.layout} {...rest}>
-//       <Header style={{ color: 'white' }}>Header</Header>
-//       <Content  >
-// 				<Flex align="start" justify="space-around" >
-// 					<div>{children}</div>
-// 				</Flex>
-//       </Content>
-//       <Footer>
-// 				Footer
-// 			</Footer>
-//     </AntLayout>
-//   )
-// }
-
-// export default Layout
-
-import type { PropsWithChildren } from 'react'
 import React from 'react';
-import { Flex, Layout as AntLayout } from 'antd';
+import { Box, AppBar, Toolbar, Typography, Container, CssBaseline } from '@mui/material';
 
-const { Header, Footer, Sider, Content } = AntLayout;
+const Layout: React.FC<React.PropsWithChildren> = ({ children }) => {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#f9f9f9' }}>
+      <CssBaseline />
+      {/* Content */}
+      <Container
+        component="main"
+        sx={{
+          flex: 1,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          padding: 2,
+          overflowX: 'auto',
+          overflowY: 'auto',
+        }}
+      >
+        {children}
+      </Container>
 
-const headerStyle: React.CSSProperties = {
-  textAlign: 'center',
-  // color: '#fff',
-  height: 64,
-  paddingInline: 48,
-  lineHeight: '64px',
-  backgroundColor: '#4096ff',
-};
-
-const contentStyle: React.CSSProperties = {
-  textAlign: 'center',
-  // minHeight: 120,
-  // color: '#fff',
-  // backgroundColor: '#0958d9',
-};
-
-const siderStyle: React.CSSProperties = {
-  textAlign: 'center',
-  // color: '#fff',
-  // backgroundColor: '#1677ff',
-};
-
-const footerStyle: React.CSSProperties = {
-  textAlign: 'center',
-  // color: '#fff',
-  // backgroundColor: '#4096ff',
-};
-
-const layoutStyle = {
-  overflow: 'hidden',
-  height:'100vh',
-  backgroundColor: 'White',
-  // width: 'calc(50% - 8px)',
-  // maxWidth: 'calc(50% - 8px)',
-};
-
-const Layout: React.FC<PropsWithChildren> = ({ children, ...rest }) => {
-  return (<Flex gap="middle" wrap>
-    <AntLayout style={layoutStyle}>
-      <Header style={headerStyle}>Header</Header>
-      <Content style={contentStyle}>{children}</Content>
-      {/* <Footer style={footerStyle}>Footer</Footer> */}
-    </AntLayout>
-  </Flex>
-)
+      {/* Footer */}
+      <Box
+        component="footer"
+        sx={{
+          textAlign: 'center',
+          padding: 2,
+          backgroundColor: '#f4f4f4',
+          color: '#666',
+        }}
+      >
+        <Typography variant="body2">
+          © {new Date().getFullYear()} WhoOweMeMoney. All rights reserved.
+        </Typography>
+      </Box>
+    </Box>
+  );
 };
 
 export default Layout;
