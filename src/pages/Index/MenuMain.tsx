@@ -18,91 +18,29 @@ interface MenuItem {
 }
 
 interface MenuMainProps {
-  people: string[];
-  menu : MenuItem[];
-  setMenu : Dispatch<SetStateAction<MenuItem[]>>;
-  taxRate : number;
-  setTaxRate : Dispatch<SetStateAction<number>>;
+  people: Record<string, string>;
+  menu: MenuItem[];
+  setMenu: React.Dispatch<React.SetStateAction<MenuItem[]>>;
+  taxRate: number;
+  setTaxRate: React.Dispatch<React.SetStateAction<number>>;
+  onEdit: (index: number) => void;
+  onDelete: (index: number) => void;
+  onAdd: () => void;
 }
 
-const MenuMain: React.FC<MenuMainProps> = ({ people , menu , setMenu , taxRate, setTaxRate}) => {
+const MenuMain: React.FC<MenuMainProps> = ({ people, menu, setMenu, taxRate, setTaxRate, onEdit, onDelete, onAdd}) => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
-  const handleAddOrEditItem = (name: string, amount: number, peopleInvolved: string[]) => {
-    const newItem: MenuItem = { name, amount, peopleInvolved };
-
-    if (editingIndex !== null) {
-      setMenu((prevMenu) => {
-        const updatedMenu = [...prevMenu];
-        updatedMenu[editingIndex] = newItem;
-        return updatedMenu;
-      });
-      setEditingIndex(null);
-      setEditingItem(null);
-    } else {
-      setMenu((prevMenu) => [...prevMenu, newItem]);
-    }
-    setDialogOpen(false);
-  };
-
-  const handleDeleteItem = (index: number) => {
-    setItemToDelete(index);
-    setDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = () => {
-    setMenu((prevMenu) => prevMenu.filter((_, i) => i !== itemToDelete));
-    setItemToDelete(null);
-    setDeleteDialogOpen(false);
-  };
-
-  const handleEditItem = (index: number) => {
-    const item = menu[index];
-    setEditingIndex(index);
-    setEditingItem(item);
-    setDialogOpen(true);
-  };
-
-  const handleAddItem = () => {
-    setEditingItem(null);
-    setEditingIndex(null);
-    setDialogOpen(true);
-  };
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <MenuTable menu={menu} people={people} onEdit={handleEditItem} onDelete={handleDeleteItem} />
+      <MenuTable menu={menu} people={people} onEdit={onEdit} onDelete={onDelete} />
       <TaxBreakdown menu={menu} taxRate={taxRate} people={people} setTaxRate={setTaxRate} />
-
-      {/* Add/Edit Dialog */}
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle>
-        <DialogContent>
-          <MenuForm onSubmit={handleAddOrEditItem} people={people} editingItem={editingItem} />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Menu Item</DialogTitle>
-        <DialogContent>
-          Are you sure you want to delete this menu item? This action cannot be undone.
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Button variant="contained" color="primary" onClick={handleAddItem}>
+      <Button variant="contained" color="primary" onClick={onAdd}>
         Add Menu Item
       </Button>
     </Box>

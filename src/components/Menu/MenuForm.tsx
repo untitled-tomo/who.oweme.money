@@ -14,7 +14,7 @@ import {
 
 interface MenuFormProps {
   onSubmit: (name: string, amount: number, peopleInvolved: string[]) => void;
-  people: string[];
+  people: Record<string, string>;
   editingItem?: { name: string; amount: number; peopleInvolved: string[] } | null;
 }
 
@@ -74,10 +74,10 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, people, editingItem }) =>
           input={<OutlinedInput label="Select People" />}
           renderValue={(selected) => selected.join(', ')}
         >
-          {people.map((person) => (
-            <MenuItem key={person} value={person}>
-              <Checkbox checked={peopleInvolved.includes(person)} />
-              {person}
+          {Object.entries(people).map(([id, name]) => (
+            <MenuItem key={id} value={id}>
+              <Checkbox checked={peopleInvolved.includes(id)} />
+              {name}
             </MenuItem>
           ))}
         </Select>
