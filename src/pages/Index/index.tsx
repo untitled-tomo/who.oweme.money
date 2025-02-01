@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
-import { Button, Stepper, Step, StepLabel, Alert, Box, Typography } from '@mui/material';
+import { Button, Stepper, Step, StepLabel, Alert, Box, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import PeopleForm from './PeopleForm';
 import MenuMain from './MenuMain';
+import Summary from './Summary';
+import MenuForm from '@/components/Menu/MenuForm';
 interface MenuItem {
   name: string;
   amount: number;
@@ -9,10 +11,20 @@ interface MenuItem {
 }
 
 const Index: React.FC = () => {
-  const [names, setNames] = useState<string[]>([]);
+  const [names, setNames] = useState<Record<string, string>>({});
+  const [menu, setMenu] = useState<MenuItem[]>([]);
   const [current, setCurrent] = useState(0);
+
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const [taxRate, setTaxRate] = useState<number>(10); // Example tax rate
   const steps = ['People', 'Menu', 'Summary'];
 
   // Ref for PeopleForm
@@ -33,29 +45,64 @@ const Index: React.FC = () => {
   };
 
   const prev = () => setCurrent((prev) => prev - 1);
-  const [menu, setMenu] = useState<MenuItem[]>([]);
-  const [taxRate, setTaxRate] = useState<number>(10); // Example tax rate
+
+  const handleAddOrEditItem = (name: string, amount: number, peopleInvolved: string[]) => {
+    const newItem: MenuItem = { name, amount, peopleInvolved };
+
+    if (editingIndex !== null) {
+      setMenu((prevMenu) => {
+        const updatedMenu = [...prevMenu];
+        updatedMenu[editingIndex] = newItem;
+        return updatedMenu;
+      });
+      setEditingIndex(null);
+      setEditingItem(null);
+    } else {
+      setMenu((prevMenu) => [...prevMenu, newItem]);
+    }
+    setDialogOpen(false);
+  };
+
+  const handleDeleteItem = (index: number) => {
+    setItemToDelete(index);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDelete = () => {
+    setMenu((prevMenu) => prevMenu.filter((_, i) => i !== itemToDelete));
+    setItemToDelete(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleEditItem = (index: number) => {
+    const item = menu[index];
+    setEditingIndex(index);
+    setEditingItem(item);
+    setDialogOpen(true);
+  };
+
+  const handleAddItem = () => {
+    setEditingItem(null);
+    setEditingIndex(null);
+    setDialogOpen(true);
+  };
+
 
   return (
     <Box sx={{
       display: 'flex',
       flexDirection: 'column',
       height: '100%',
-      // overflow: 'auto', 
+      overflow: 'auto', 
       maxWidth: '90vw'
     }}>
       <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 ,  width: '100%', }}>
-        <Stepper activeStep={current}sx={{
-            alignItems: 'center',
-            width: '100%', maxWidth: 600
-            
-          }}>
+        <Stepper activeStep={current}sx={{ alignItems: 'center', width: '100%', maxWidth: 600 }}>
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
             </Step>
           ))}
-        
         </Stepper>
       </Box>
       {alertMessage && (
@@ -64,14 +111,23 @@ const Index: React.FC = () => {
         </Alert>
       )}
 
-
       <Box sx={{ flex: 1, overflow: 'auto' }}>
         {current === 0 && (
           <PeopleForm ref={peopleFormRef} setNames={setNames} />
         )}
-        {current === 1 && <MenuMain people={names} menu={menu} setMenu={setMenu} taxRate={taxRate} setTaxRate={setTaxRate} />}
+        {current === 1 && (
+          <MenuMain 
+            people={names}
+            menu={menu}
+            setMenu={setMenu}
+            taxRate={taxRate}
+            setTaxRate={setTaxRate}
+            onEdit={handleEditItem}
+            onDelete={handleDeleteItem}
+            onAdd={handleAddItem}
+          />)}
         {current === 2 && (
-          <Typography variant="h6">Summary content here.</Typography>
+          <Summary people={names} menu={menu} />
         )}
       </Box>
 
@@ -99,6 +155,31 @@ const Index: React.FC = () => {
           </Button>
         )}
       </Box>
+
+        {/* Add/Edit Dialog */}
+            <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+        <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle>
+        <DialogContent>
+          <MenuForm onSubmit={handleAddOrEditItem} people={names} editingItem={editingItem} />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete Menu Item</DialogTitle>
+        <DialogContent>
+          Are you sure you want to delete this menu item? This action cannot be undone.
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          <Button onClick={confirmDelete} color="error">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
