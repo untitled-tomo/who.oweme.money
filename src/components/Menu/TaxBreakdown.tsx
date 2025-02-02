@@ -4,11 +4,12 @@ import { Box, Paper, Slider, Table, TableBody, TableCell, TableContainer, TableH
 interface TaxBreakdownProps {
   menu: { name: string; amount: number; peopleInvolved: string[] }[];
   taxRate: number;
+  isSummary:Boolean;
   people: Record<string, string>;
-  setTaxRate: Dispatch<SetStateAction<number>>;
+  setTaxRate?: Dispatch<SetStateAction<number>>;
 }
 
-const TaxBreakdown: React.FC<TaxBreakdownProps> = ({ menu, taxRate, people, setTaxRate }) => {
+const TaxBreakdown: React.FC<TaxBreakdownProps> = ({ isSummary=false, menu, taxRate, people, setTaxRate }) => {
   const totals = Object.keys(people).reduce((acc, personId) => {
     acc[personId] = 0;
     return acc;
@@ -23,22 +24,22 @@ const TaxBreakdown: React.FC<TaxBreakdownProps> = ({ menu, taxRate, people, setT
 
   return (
     <Box>
-      <Box>
+      <Box mb={isSummary ? 2: 0}>
         <Typography>Tax percentage - {taxRate} %</Typography>
-        <Slider
+        {!isSummary && <Slider
           size="small"
           value={taxRate}
           aria-label="Small"
           valueLabelDisplay="auto"
           onChange={(event, value) => {
             if (typeof value === 'number') {
-              setTaxRate(value);
+              setTaxRate && setTaxRate(value);
             }
           }}
-        />
+        />}
       </Box>
 
-      <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 4 }}>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 1 }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>

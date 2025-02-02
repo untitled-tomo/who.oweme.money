@@ -20,15 +20,16 @@ interface MenuItem {
 interface MenuMainProps {
   people: Record<string, string>;
   menu: MenuItem[];
-  setMenu: React.Dispatch<React.SetStateAction<MenuItem[]>>;
+  setMenu?: React.Dispatch<React.SetStateAction<MenuItem[]>>;
   taxRate: number;
-  setTaxRate: React.Dispatch<React.SetStateAction<number>>;
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
-  onAdd: () => void;
+  isSummary?:Boolean;
+  setTaxRate?: React.Dispatch<React.SetStateAction<number>>;
+  onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
+  onAdd?: () => void;
 }
 
-const MenuMain: React.FC<MenuMainProps> = ({ people, menu, setMenu, taxRate, setTaxRate, onEdit, onDelete, onAdd}) => {
+const MenuMain: React.FC<MenuMainProps> = ({ people,isSummary=false ,menu, setMenu, taxRate, setTaxRate, onEdit, onDelete, onAdd}) => {
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -37,12 +38,12 @@ const MenuMain: React.FC<MenuMainProps> = ({ people, menu, setMenu, taxRate, set
 
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-      <MenuTable menu={menu} people={people} onEdit={onEdit} onDelete={onDelete} />
-      <TaxBreakdown menu={menu} taxRate={taxRate} people={people} setTaxRate={setTaxRate} />
-      <Button variant="contained" color="primary" onClick={onAdd}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }} mb={1}>
+      <MenuTable menu={menu} people={people} onEdit={onEdit} onDelete={onDelete}  isSummary={isSummary} />
+      <TaxBreakdown menu={menu} taxRate={taxRate} people={people} setTaxRate={setTaxRate} isSummary={isSummary}/>
+      {!isSummary && <Button variant="contained" color="primary" onClick={onAdd}>
         Add Menu Item
-      </Button>
+      </Button>}
     </Box>
   );
 };

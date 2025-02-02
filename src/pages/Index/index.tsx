@@ -127,7 +127,7 @@ const Index: React.FC = () => {
             onAdd={handleAddItem}
           />)}
         {current === 2 && (
-          <Summary people={names} menu={menu} />
+          <Summary people={names} menu={menu} taxRate={taxRate} />
         )}
       </Box>
 
@@ -158,7 +158,7 @@ const Index: React.FC = () => {
 
         {/* Add/Edit Dialog */}
             <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-        <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle>
+        {/* <DialogTitle>{editingItem ? 'Edit Menu Item' : 'Add Menu Item'}</DialogTitle> */}
         <DialogContent>
           <MenuForm onSubmit={handleAddOrEditItem} people={names} editingItem={editingItem} />
         </DialogContent>
