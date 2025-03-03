@@ -33,7 +33,6 @@ const Index: React.FC = () => {
   const next = () => {
     if (current === 0) {
       // Validate PeopleForm
-      setMenu([])
       const isValid = peopleFormRef.current?.validate();
       if (!isValid) {
         setAlertMessage('Please ensure you have entered at least 2 people with valid names.');
