@@ -44,16 +44,19 @@ const TaxBreakdown: React.FC<TaxBreakdownProps> = ({ isSummary=false, menu, taxR
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold' }}>People</TableCell>
+              <TableCell sx={{ fontWeight: 'bold' }}>Menu Total</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Tax</TableCell>
               <TableCell sx={{ fontWeight: 'bold' }}>Total</TableCell>
+
             </TableRow>
           </TableHead>
           <TableBody>
             {Object.entries(people).map(([id, name]) => (
               <TableRow key={id}>
                 <TableCell sx={{ fontWeight: 'bold' }}>{name}</TableCell>
-                <TableCell>{((totals[id] * taxRate) / 100).toFixed(2)}</TableCell>
                 <TableCell>{totals[id].toFixed(2)}</TableCell>
+                <TableCell>{((totals[id] * taxRate) / 100).toFixed(2)}</TableCell>
+                <TableCell>{Number(((totals[id] * taxRate) / 100).toFixed(2)) + Number(totals[id].toFixed(2))}</TableCell>
               </TableRow>
             ))}
           </TableBody>

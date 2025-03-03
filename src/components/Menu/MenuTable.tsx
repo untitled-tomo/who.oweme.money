@@ -29,7 +29,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ isSummary=false, menu, people, on
             {Object.entries(people).map(([id, name]) => (
               <TableCell key={id} sx={{ fontWeight: 'bold', zIndex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '102px' }}>{name}</TableCell>
             ))}
-           {!isSummary && <TableCell sx={{ fontWeight: 'bold', zIndex: 1 }}>Actions</TableCell>}
+            {!isSummary && <TableCell sx={{ fontWeight: 'bold', zIndex: 1 }}>Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>

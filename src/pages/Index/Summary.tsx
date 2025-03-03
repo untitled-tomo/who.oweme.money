@@ -21,11 +21,18 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
       return acc;
     }, {} as Record<string, number>);
 
+      // Calculate base amounts
     menu.forEach((item) => {
       const amountPerPerson = item.amount / item.peopleInvolved.length;
       item.peopleInvolved.forEach((personId) => {
         totals[personId] += amountPerPerson;
       });
+    });
+
+      // Add tax to each person's total
+    Object.keys(totals).forEach((personId) => {
+      const personTax = (totals[personId] * taxRate) / 100;
+      totals[personId] += personTax;
     });
 
     return totals;
@@ -40,7 +47,7 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
       </Typography>
       <Box
         sx={{
-          'flex-direction': { xs: 'column', sm: 'column', md: 'row' }, 
+          'flexDirection': { xs: 'column', sm: 'column', md: 'row' }, 
           gap:'28px',
           display:'flex'
         }}
