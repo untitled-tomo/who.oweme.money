@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Box, Typography, Select, MenuItem, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, SelectChangeEvent } from '@mui/material';
+import MenuMain from './MenuMain';
 
 interface SummaryProps {
   people: Record<string, string>;
+  taxRate: number;
   menu: { name: string; amount: number; peopleInvolved: string[] }[];
 }
 
-const Summary: React.FC<SummaryProps> = ({ people, menu }) => {
+const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
   const [payer, setPayer] = useState<string>('');
 
   const handlePayerChange = (event: SelectChangeEvent<string>) => {
@@ -36,18 +38,59 @@ const Summary: React.FC<SummaryProps> = ({ people, menu }) => {
       <Typography variant="h6" mb={2}>
         Summary
       </Typography>
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Who Paid the Bill?</InputLabel>
-        <Select value={payer} onChange={handlePayerChange}>
-          {Object.entries(people).map(([id, name]) => (
-            <MenuItem key={id} value={id}>
-              {name}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
+      <Box
+        sx={{
+          'flex-direction': { xs: 'column', sm: 'column', md: 'row' }, 
+          gap:'28px',
+          display:'flex'
+        }}
+        gap={10}
+      >
+        <Box>
+          <FormControl fullWidth sx={{ mb: 2, minWidth: '180px' }}>
+            <InputLabel sx={{background:'#f9f9f9'}}>Who Paid the Bill?</InputLabel>
+            <Select value={payer} onChange={handlePayerChange}>
+              {Object.entries(people).map(([id, name]) => (
+                <MenuItem key={id} value={id}>
+                  {name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
 
-      <TableContainer component={Paper} sx={{ mb: 4 }}>
+          {payer && (
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Person</TableCell>
+                    <TableCell>Amount Owed to {people[payer]}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Object.entries(people).map(([id, name]) => (
+                    <TableRow key={id}>
+                      <TableCell>{name}</TableCell>
+                      <TableCell>
+                        {id === payer ? '0.00' : owedAmounts[id].toFixed(2)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </Box>
+        <MenuMain
+          isSummary={true}
+          people={people}
+          menu={menu}
+          taxRate={taxRate}
+        />
+
+      </Box>
+
+      {/* <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -74,30 +117,9 @@ const Summary: React.FC<SummaryProps> = ({ people, menu }) => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer>
+      </TableContainer> */}
 
-      {payer && (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Person</TableCell>
-                <TableCell>Amount Owed to {people[payer]}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Object.entries(people).map(([id, name]) => (
-                <TableRow key={id}>
-                  <TableCell>{name}</TableCell>
-                  <TableCell>
-                    {id === payer ? '0.00' : owedAmounts[id].toFixed(2)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
+
     </Box>
   );
 };

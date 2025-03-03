@@ -13,13 +13,14 @@ import { Edit, Delete } from '@mui/icons-material';
 interface MenuTableProps {
   menu: { name: string; amount: number; peopleInvolved: string[] }[];
   people: Record<string, string>;
-  onEdit: (index: number) => void;
-  onDelete: (index: number) => void;
+  isSummary?:Boolean;
+  onEdit?: (index: number) => void;
+  onDelete?: (index: number) => void;
 }
 
-const MenuTable: React.FC<MenuTableProps> = ({ menu, people, onEdit, onDelete }) => {
+const MenuTable: React.FC<MenuTableProps> = ({ isSummary=false, menu, people, onEdit, onDelete }) => {
   return (
-    <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 4 }}>
+    <TableContainer component={Paper} sx={{ overflowX: 'auto', mb: 1 }}>
       <Table stickyHeader>
         <TableHead>
           <TableRow>
@@ -28,7 +29,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ menu, people, onEdit, onDelete })
             {Object.entries(people).map(([id, name]) => (
               <TableCell key={id} sx={{ fontWeight: 'bold', zIndex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '102px' }}>{name}</TableCell>
             ))}
-            <TableCell sx={{ fontWeight: 'bold', zIndex: 1 }}>Actions</TableCell>
+           {!isSummary && <TableCell sx={{ fontWeight: 'bold', zIndex: 1 }}>Actions</TableCell>}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -43,14 +44,14 @@ const MenuTable: React.FC<MenuTableProps> = ({ menu, people, onEdit, onDelete })
                     : '-'}
                 </TableCell>
               ))}
-              <TableCell sx={{display:'flex'}}>
-                <IconButton onClick={() => onEdit(index)} aria-label="edit">
+              {!isSummary && <TableCell sx={{display:'flex'}}>
+                <IconButton onClick={() => onEdit && onEdit(index)} aria-label="edit">
                   <Edit />
                 </IconButton>
-                <IconButton onClick={() => onDelete(index)} aria-label="delete" color="error">
+                <IconButton onClick={() => onDelete && onDelete(index)} aria-label="delete" color="error">
                   <Delete />
                 </IconButton>
-              </TableCell>
+              </TableCell>}
             </TableRow>
           ))}
         </TableBody>
