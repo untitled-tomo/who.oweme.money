@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Typography, Select, MenuItem, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, SelectChangeEvent } from '@mui/material';
+import { Box, Typography, Select, MenuItem, FormControl, InputLabel, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, SelectChangeEvent, Button, CircularProgress, Snackbar, Alert } from '@mui/material';
 import MenuMain from './MenuMain';
+import ShareCard from '../../components/ShareCard/ShareCard';
+import { elementToDataUrl, shareImage } from '../../utils/imageUtils';
 
 interface SummaryProps {
   people: Record<string, string>;
@@ -10,6 +12,10 @@ interface SummaryProps {
 
 const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
   const [payer, setPayer] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
 
   const handlePayerChange = (event: SelectChangeEvent<string>) => {
     setPayer(event.target.value as string);
@@ -21,7 +27,7 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
       return acc;
     }, {} as Record<string, number>);
 
-      // Calculate base amounts
+    // Calculate base amounts
     menu.forEach((item) => {
       const amountPerPerson = item.amount / item.peopleInvolved.length;
       item.peopleInvolved.forEach((personId) => {
@@ -29,7 +35,7 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
       });
     });
 
-      // Add tax to each person's total
+    // Add tax to each person's total
     Object.keys(totals).forEach((personId) => {
       const personTax = (totals[personId] * taxRate) / 100;
       totals[personId] += personTax;
@@ -39,6 +45,33 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
   };
 
   const owedAmounts = calculateOwedAmounts();
+
+  const handleShareImage = async (element: HTMLElement) => {
+    try {
+      setIsProcessing(true);
+      
+      // Convert element to image data URL
+      const dataUrl = await elementToDataUrl(element);
+      
+      // Share the image
+      await shareImage(dataUrl, 'who-owe-me-money-summary.png');
+      
+      setSnackbarMessage('Summary shared successfully!');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error('Failed to share image:', error);
+      setSnackbarMessage('Failed to share summary. Please try again.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
 
   return (
     <Box>
@@ -94,39 +127,43 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
           menu={menu}
           taxRate={taxRate}
         />
-
       </Box>
 
-      {/* <TableContainer component={Paper} sx={{ mb: 4 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Item Name</TableCell>
-              <TableCell>Amount</TableCell>
-              {Object.entries(people).map(([id, name]) => (
-                <TableCell key={id}>{name}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {menu.map((item, index) => (
-              <TableRow key={index}>
-                <TableCell>{item.name}</TableCell>
-                <TableCell>{item.amount.toFixed(2)}</TableCell>
-                {Object.entries(people).map(([id, name]) => (
-                  <TableCell key={id}>
-                    {item.peopleInvolved.includes(id)
-                      ? (item.amount / item.peopleInvolved.length).toFixed(2)
-                      : '-'}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer> */}
+      {payer && (
+        <Box mt={4}>
+          <Typography variant="h6" gutterBottom>
+            Share the Summary
+          </Typography>
+          {isProcessing ? (
+            <Box display="flex" alignItems="center" gap={2}>
+              <CircularProgress size={24} />
+              <Typography>Generating shareable summary...</Typography>
+            </Box>
+          ) : (
+            <ShareCard
+              people={people}
+              menu={menu}
+              taxRate={taxRate}
+              payer={payer}
+              onShareImage={handleShareImage}
+            />
+          )}
+        </Box>
+      )}
 
-
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbarSeverity}
+          sx={{ width: '100%' }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

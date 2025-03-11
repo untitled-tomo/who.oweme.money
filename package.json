@@ -1,5 +1,5 @@
 {
-  "name": "create-react-app-vite",
+  "name": "who-oweme-money",
   "version": "0.4.0",
   "license": "MIT",
   "msw": {
@@ -34,6 +34,8 @@
     "antd": "^5.23.2",
     "bootstrap": "^5.3.3",
     "clsx": "^2.1.1",
+    "file-saver": "^2.0.5",
+    "html2canvas": "^1.4.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.1.3"
