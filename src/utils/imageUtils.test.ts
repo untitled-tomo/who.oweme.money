@@ -5,11 +5,9 @@ import { elementToDataUrl, dataURLtoBlob, shareImage, downloadImage } from './im
 global.URL.createObjectURL = vi.fn();
 global.URL.revokeObjectURL = vi.fn();
 
-// Mock html2canvas module
-vi.mock('html2canvas', () => ({
-  default: vi.fn().mockResolvedValue({
-    toDataURL: vi.fn().mockReturnValue('mock-data-url')
-  })
+// Mock window.html2canvas since we're loading it from CDN
+vi.stubGlobal('html2canvas', vi.fn().mockResolvedValue({
+  toDataURL: vi.fn().mockReturnValue('mock-data-url')
 }));
 
 // Mock file-saver
@@ -26,9 +24,25 @@ describe('imageUtils', () => {
   const mockDataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
   beforeEach(() => {
-    // Setup for file saver mocks
     document.body.innerHTML = '';
     vi.clearAllMocks();
+    
+    // Mock document.createElement for script tag
+    const originalCreateElement = document.createElement;
+    vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+      if (tagName === 'script') {
+        const scriptEl = document.createElement('script');
+        // Simulate script loading
+        setTimeout(() => {
+          if (scriptEl.onload) scriptEl.onload({} as Event);
+        }, 0);
+        return scriptEl;
+      }
+      return originalCreateElement.call(document, tagName);
+    });
+    
+    // Mock appendChild to avoid actually appending scripts
+    vi.spyOn(document.head, 'appendChild').mockImplementation(() => document.head);
   });
 
   afterEach(() => {
@@ -54,19 +68,17 @@ describe('imageUtils', () => {
 
   describe('elementToDataUrl', () => {
     it('should call html2canvas and return a data URL', async () => {
-      // Simplified test that relies on the mock
+      // Test with our new CDN-based approach
       const result = await elementToDataUrl(mockElement);
       expect(result).toBe('mock-data-url');
       
-      // Check import worked (simplified assertion)
-      const html2canvas = await import('html2canvas').then(mod => mod.default);
-      expect(html2canvas).toHaveBeenCalled();
+      // Verify html2canvas was called
+      expect(window.html2canvas).toHaveBeenCalled();
     });
 
-    it('should handle errors by returning a placeholder', async () => {
+    it('should handle errors by rethrowing them', async () => {
       // Reset mock to simulate an error
-      const html2canvasModule = await import('html2canvas');
-      vi.mocked(html2canvasModule.default).mockRejectedValueOnce(new Error('canvas error'));
+      vi.mocked(window.html2canvas).mockRejectedValueOnce(new Error('canvas error'));
       
       // Mock console.error
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
@@ -127,77 +139,36 @@ describe('imageUtils', () => {
   });
 
   describe('shareImage', () => {
-    // Simplified test for Web Share API
-    it('should use Web Share API when available', async () => {
-      // Skip if Web Share API is not available in test environment
-      if (!('share' in navigator)) {
-        console.log('Web Share API not available, skipping test');
-        return;
-      }
+    it('should use FileSaver to save the image', async () => {
+      // Setup test
+      const fileSaverModule = await import('file-saver');
+      const saveAsSpy = vi.mocked(fileSaverModule.saveAs);
       
-      // Set up mocks for Web Share API
-      const shareFunction = vi.fn().mockResolvedValue(undefined);
-      const canShareFunction = vi.fn().mockReturnValue(true);
+      // Call the function
+      await shareImage(mockDataUrl, 'test.png');
       
-      // @ts-ignore - Mocking browser API
-      navigator.share = shareFunction;
-      // @ts-ignore - Mocking browser API
-      navigator.canShare = canShareFunction;
-      
-      // Mock File constructor
-      const originalFile = global.File;
-      // @ts-ignore - Mocking File API
-      global.File = vi.fn().mockImplementation((bits, name, options) => ({
-        bits,
-        name,
-        type: options.type
-      }));
-      
-      try {
-        await shareImage(mockDataUrl, 'test.png');
-        
-        // Basic check that share was called
-        expect(shareFunction).toHaveBeenCalled();
-      } finally {
-        // Restore original File
-        global.File = originalFile;
-      }
+      // Verify saveAs was called with a Blob and filename
+      expect(saveAsSpy).toHaveBeenCalledWith(
+        expect.any(Blob),
+        'test.png'
+      );
     });
 
-    // Simplified fallback test
-    it('should fall back to download when Web Share API is not available', async () => {
-      // Temporarily remove share API
-      const originalShare = navigator.share;
-      const originalCanShare = navigator.canShare;
-      
-      // @ts-ignore - Removing browser API
-      navigator.share = undefined;
-      // @ts-ignore - Removing browser API
-      navigator.canShare = undefined;
-      
-      // Use vi.spyOn on the module's exported function instead of window
-      const downloadImageMock = vi.fn();
-      vi.mock('./imageUtils', async (importOriginal) => {
-        const actual = await importOriginal() as typeof import('./imageUtils');
-        return {
-          ...actual,
-          downloadImage: downloadImageMock
-        };
+    it('should handle errors', async () => {
+      // Setup test - mock saveAs to throw
+      const fileSaverModule = await import('file-saver');
+      vi.mocked(fileSaverModule.saveAs).mockImplementation(() => {
+        throw new Error('saveAs error');
       });
       
-      try {
-        await shareImage(mockDataUrl, 'test.png');
-        
-        // Check downloadImage was called as fallback
-        expect(downloadImageMock).toHaveBeenCalledWith(mockDataUrl, 'test.png');
-      } finally {
-        // Restore original API
-        navigator.share = originalShare;
-        navigator.canShare = originalCanShare;
-        
-        // Restore original mocks
-        vi.resetModules();
-      }
+      // Mock console.error
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      
+      // Call should throw as we're now rethrowing errors
+      await expect(shareImage(mockDataUrl, 'test.png')).rejects.toThrow('saveAs error');
+      
+      expect(consoleSpy).toHaveBeenCalled();
+      consoleSpy.mockRestore();
     });
   });
 }); 

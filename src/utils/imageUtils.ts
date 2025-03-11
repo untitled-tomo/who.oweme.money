@@ -6,8 +6,28 @@
  * pnpm add html2canvas
  */
 
-// Type declaration for html2canvas if not using TypeScript
-declare const html2canvas: any;
+// Import html2canvas dynamically from CDN when needed
+let html2canvasModule: any = null;
+
+const loadHtml2Canvas = async () => {
+  if (html2canvasModule) return html2canvasModule;
+  
+  // Create a script element to load html2canvas from CDN
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    script.async = true;
+    script.onload = () => {
+      // @ts-ignore - html2canvas will be available on window after script loads
+      html2canvasModule = window.html2canvas;
+      resolve(html2canvasModule);
+    };
+    script.onerror = (error) => {
+      reject(new Error('Failed to load html2canvas from CDN'));
+    };
+    document.head.appendChild(script);
+  });
+};
 
 /**
  * Converts a DOM element to a data URL representing a PNG image
@@ -17,21 +37,16 @@ declare const html2canvas: any;
  */
 export const elementToDataUrl = async (element: HTMLElement): Promise<string> => {
   try {
-    // Use dynamically imported html2canvas to ensure it's only loaded when needed
-    const html2canvasModule = await import('html2canvas');
-    const html2canvas = html2canvasModule.default;
-
-    // Set scale for better quality
+    const html2canvas = await loadHtml2Canvas();
     const canvas = await html2canvas(element, {
-      scale: 2,
-      useCORS: true,
-      logging: false,
       backgroundColor: null,
+      scale: 2, // Higher scale for better quality
+      logging: false,
+      useCORS: true,
     });
-    
     return canvas.toDataURL('image/png');
   } catch (error) {
-    console.error('Error converting element to image:', error);
+    console.error('Failed to generate image:', error);
     throw error;
   }
 };
@@ -63,30 +78,28 @@ export const dataURLtoBlob = (dataUrl: string): Blob => {
  * @param dataUrl - Data URL of the image to share
  * @param fileName - Name of the file for download fallback
  */
-export const shareImage = async (dataUrl: string, fileName: string = 'bill-summary.png'): Promise<void> => {
+export const shareImage = async (dataUrl: string, fileName: string): Promise<void> => {
   try {
-    const blob = dataURLtoBlob(dataUrl);
+    // Dynamic import FileSaver only when needed
+    const { saveAs } = await import('file-saver');
     
-    // Check if Web Share API is available
-    if (navigator.share && navigator.canShare) {
-      const file = new File([blob], fileName, { type: 'image/png' });
-      
-      if (navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          title: 'Bill Summary',
-          text: 'My bill splitting summary from Who Owe Me Money app',
-          files: [file],
-        });
-        return;
-      }
+    // Convert dataUrl to Blob
+    const byteString = atob(dataUrl.split(',')[1]);
+    const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
     }
     
-    // Fallback to download if sharing is not supported
-    downloadImage(dataUrl, fileName);
+    const blob = new Blob([ab], { type: mimeString });
+    
+    // Save blob as file
+    saveAs(blob, fileName);
   } catch (error) {
-    console.error('Error sharing image:', error);
-    // Fallback to download on error
-    downloadImage(dataUrl, fileName);
+    console.error('Failed to save image:', error);
+    throw error;
   }
 };
 

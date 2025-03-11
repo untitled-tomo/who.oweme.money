@@ -6,6 +6,24 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: {
     sourcemap: true,
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Group React related packages
+          'react-vendor': ['react', 'react-dom'],
+          // Group MUI related packages 
+          'mui-vendor': [
+            '@mui/material',
+            '@mui/icons-material',
+            '@emotion/react',
+            '@emotion/styled',
+          ],
+          // Group utility libraries
+          'utils-vendor': ['file-saver'],
+        },
+      },
+    },
   },
   plugins: [react()],
   publicDir: 'public',

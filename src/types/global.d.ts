@@ -12,4 +12,12 @@ interface ShareData {
 }
 
 // html2canvas module declaration
-declare module 'html2canvas'; 
+declare module 'html2canvas';
+
+// Global type declarations
+
+interface Window {
+  html2canvas: (element: HTMLElement, options?: any) => Promise<{
+    toDataURL: (type?: string, quality?: number) => string;
+  }>;
+} 
