@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import ShareCard from './ShareCard';
@@ -50,6 +50,34 @@ const renderWithTheme = (ui: React.ReactNode) => {
   );
 };
 
+// Helper function to select a payer in the MUI select component
+const selectPayer = async (payerName: string) => {
+  // Find the select by its text and open it
+  const selectElement = screen.getByText('Who Paid the Bill?').closest('div');
+  if (!selectElement) {
+    throw new Error('Could not find select element');
+  }
+  
+  // Click on the select element to open the dropdown
+  fireEvent.mouseDown(selectElement.querySelector('[role="combobox"]') as HTMLElement);
+  
+  // Wait for the dropdown to appear
+  await waitFor(() => {
+    const options = document.querySelectorAll('[role="option"]');
+    expect(options.length).toBeGreaterThan(0);
+  });
+  
+  // Find and click the option using role instead of just text
+  const options = document.querySelectorAll('[role="option"]');
+  const option = Array.from(options).find(opt => opt.textContent === payerName);
+  
+  if (!option) {
+    throw new Error(`Could not find option for ${payerName}`);
+  }
+  
+  fireEvent.click(option);
+};
+
 describe('ShareCard Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -75,8 +103,7 @@ describe('ShareCard Integration Tests', () => {
     expect(screen.queryByText('Share the Summary')).not.toBeInTheDocument();
     
     // Select a payer
-    await user.click(screen.getByLabelText('Who Paid the Bill?'));
-    await user.click(screen.getByText('Alice'));
+    await selectPayer('Alice');
     
     // Verify ShareCard appears
     expect(screen.getByText('Share the Summary')).toBeInTheDocument();
@@ -120,8 +147,7 @@ describe('ShareCard Integration Tests', () => {
     );
     
     // Select a payer
-    await user.click(screen.getByLabelText('Who Paid the Bill?'));
-    await user.click(screen.getByText('Alice'));
+    await selectPayer('Alice');
     
     // Click the share button
     const shareButton = screen.getByRole('button', { name: /share summary/i });
@@ -149,8 +175,7 @@ describe('ShareCard Integration Tests', () => {
     );
     
     // Select a payer and share
-    await user.click(screen.getByLabelText('Who Paid the Bill?'));
-    await user.click(screen.getByText('Alice'));
+    await selectPayer('Alice');
     await user.click(screen.getByRole('button', { name: /share summary/i }));
     
     // Verify the notification appears
@@ -182,8 +207,7 @@ describe('ShareCard Integration Tests', () => {
     );
     
     // Select a payer and share
-    await user.click(screen.getByLabelText('Who Paid the Bill?'));
-    await user.click(screen.getByText('Alice'));
+    await selectPayer('Alice');
     await user.click(screen.getByRole('button', { name: /share summary/i }));
     
     // Verify the notification appears
