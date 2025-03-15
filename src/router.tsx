@@ -8,15 +8,11 @@ import Notfound from './pages/Notfound';
 const router = createBrowserRouter([
   {
     path: '/',
-    element:       <WelcomePage
-    navigate={(path) => router.navigate(path)} // Same here
-  />
+    element: <WelcomePage navigate={(path) => router.navigate(path)} />
   },
   {
     path: '/welcome',
-    element:       <WelcomePage
-    navigate={(path) => router.navigate(path)} // Same here
-  />
+    element: <WelcomePage navigate={(path) => router.navigate(path)} />
   },
   {
     path: '/app',

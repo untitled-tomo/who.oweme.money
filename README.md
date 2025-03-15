@@ -7,6 +7,12 @@ A web-based bill splitting application for restaurant outings with friends. The 
 4. Specify who paid the bill
 5. Generate a detailed breakdown showing each person's share of the bill
 
+## Features
+
+- **Bill Splitting**: Split bills among friends with customizable tax rates
+- **Dark & Light Modes**: Toggle between dark and light theme based on your preference
+- **ShareCard**: Generate and share beautiful bill summary images with friends
+
 UI/Style:
 - Playful, food-inspired color palette with appetizing imagery
 - Intuitive, step-by-step interface mimicking a digital menu board
@@ -17,16 +23,17 @@ UI/Style:
 # Installation
 
 ```
-npx degit laststance/create-react-app-vite myapp
+git clone https://github.com/yourusername/who-oweme-money.git
+cd who-oweme-money
+pnpm install
 ```
 
-### pnpm
+## Required Dependencies
 
-```sh
-cd myapp
-pnpm install
-pnpm validate
-pnpm start
+For the ShareCard image generation feature, you need to install:
+
+```
+pnpm add html2canvas file-saver @types/file-saver
 ```
 
 ### Commands
@@ -44,10 +51,6 @@ pnpm prettier        # run prettier for json|yml|css|md|mdx files
 pnpm clean           # remove 'node_modules' 'yarn.lock' 'dist' completely
 pnpm serve           # launch server for production bundle in local
 ```
-
-# CRA to Vite migration guides
-
-
 
 # Background
 
