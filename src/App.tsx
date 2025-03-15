@@ -1,6 +1,7 @@
 import React, { useState, createContext, useContext } from 'react';
 import { RouterProvider } from 'react-router';
 import { ThemeProvider, CssBaseline, useMediaQuery } from '@mui/material';
+import { HelmetProvider } from 'react-helmet-async';
 import ErrorBoundary from './components/ErrorBoundary';
 import router from './router';
 import getTheme from './theme';
@@ -36,10 +37,12 @@ const App: React.FC = () => {
   return (
     <ThemeContext.Provider value={{ darkMode, toggleTheme }}>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ErrorBoundary>
-          <RouterProvider router={router} />
-        </ErrorBoundary>
+        <HelmetProvider>
+          <CssBaseline />
+          <ErrorBoundary>
+            <RouterProvider router={router} />
+          </ErrorBoundary>
+        </HelmetProvider>
       </ThemeProvider>
     </ThemeContext.Provider>
   );

@@ -1,0 +1,48 @@
+<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#FF7043" />
+  
+  <!-- Decorative elements -->
+  <circle cx="150" cy="150" r="100" fill="#FFAB91" opacity="0.7" />
+  <circle cx="1050" cy="150" r="100" fill="#FFAB91" opacity="0.7" />
+  <circle cx="150" cy="480" r="100" fill="#FFAB91" opacity="0.7" />
+  <circle cx="1050" cy="480" r="100" fill="#FFAB91" opacity="0.7" />
+  
+  <!-- Main content -->
+  <rect x="250" y="165" width="700" height="300" rx="20" fill="white" />
+  
+  <!-- App Title -->
+  <text x="600" y="120" font-family="Arial, sans-serif" font-size="60" font-weight="bold" text-anchor="middle" fill="white">
+    Who Owe Me Money
+  </text>
+  
+  <!-- Tagline -->
+  <text x="600" y="250" font-family="Arial, sans-serif" font-size="40" font-weight="normal" text-anchor="middle" fill="#333">
+    Split Bills Easily
+  </text>
+  
+  <!-- Icon representations -->
+  <g transform="translate(350, 300)">
+    <rect x="0" y="0" width="100" height="40" rx="5" fill="#4DB6AC" />
+    <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="white">Food</text>
+  </g>
+  
+  <g transform="translate(550, 300)">
+    <rect x="0" y="0" width="100" height="40" rx="5" fill="#4DB6AC" />
+    <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="white">$25.50</text>
+  </g>
+  
+  <g transform="translate(750, 300)">
+    <rect x="0" y="0" width="100" height="40" rx="5" fill="#4DB6AC" />
+    <text x="50" y="25" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="white">2 People</text>
+  </g>
+  
+  <text x="600" y="400" font-family="Arial, sans-serif" font-size="30" font-weight="bold" text-anchor="middle" fill="#333">
+    Track who owes what, instantly!
+  </text>
+  
+  <!-- URL -->
+  <text x="600" y="550" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white">
+    whoowememoney.app
+  </text>
+</svg> 
