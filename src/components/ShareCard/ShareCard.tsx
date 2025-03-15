@@ -14,9 +14,17 @@ interface ShareCardProps {
   taxRate: number;
   payer: string;
   onShareImage: (cardElement: HTMLElement) => void;
+  showButton?: boolean;
 }
 
-const ShareCard: React.FC<ShareCardProps> = ({ people, menu, taxRate, payer, onShareImage }) => {
+const ShareCard: React.FC<ShareCardProps> = ({ 
+  people, 
+  menu, 
+  taxRate, 
+  payer, 
+  onShareImage,
+  showButton = true
+}) => {
   const theme = useTheme();
   const shareCardRef = useRef<HTMLDivElement>(null);
 
@@ -54,16 +62,25 @@ const ShareCard: React.FC<ShareCardProps> = ({ people, menu, taxRate, payer, onS
   const taxAmount = (totalAmount * taxRate) / 100;
   const grandTotal = totalAmount + taxAmount;
 
+  // When the component mounts or the ref changes, call onShareImage
+  React.useEffect(() => {
+    if (shareCardRef.current) {
+      onShareImage(shareCardRef.current);
+    }
+  }, [onShareImage]);
+
   return (
     <Box mb={3}>
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={() => shareCardRef.current && onShareImage(shareCardRef.current)}
-        sx={{ mb: 2 }}
-      >
-        Share Summary
-      </Button>
+      {showButton && (
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={() => shareCardRef.current && onShareImage(shareCardRef.current)}
+          sx={{ mb: 2 }}
+        >
+          Share Summary
+        </Button>
+      )}
       
       <Paper 
         ref={shareCardRef} 

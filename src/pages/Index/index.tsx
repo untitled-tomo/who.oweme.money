@@ -135,7 +135,20 @@ const Index: React.FC = () => {
               onAdd={handleAddItem}
             />)}
           {current === 2 && (
-            <Summary people={names} menu={menu} taxRate={taxRate} />
+            <Summary 
+              people={names} 
+              menu={menu} 
+              taxRate={taxRate} 
+              onPrevious={() => setCurrent(1)}
+              onDone={() => {
+                // Reset to initial step when done
+                setCurrent(0);
+                setMenu([]);
+                setNames({});
+                setTaxRate(10);
+                setAlertMessage(null);
+              }}
+            />
           )}
         </Box>
 
@@ -144,7 +157,7 @@ const Index: React.FC = () => {
             justifyContent: 'center',
             mt: 3,
           }}>
-          {current > 0 && (
+          {current > 0 && current < steps.length - 1 && (
             <Button variant="outlined" onClick={prev} sx={{ mr: 2 }}>
               Previous
             </Button>
@@ -153,15 +166,7 @@ const Index: React.FC = () => {
             <Button variant="contained" color="primary" onClick={next}>
               Next
             </Button>
-          ) : (
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => alert('All steps complete!')}
-            >
-              Done
-            </Button>
-          )}
+          ) : null}
         </Box>
 
           {/* Add/Edit Dialog */}
