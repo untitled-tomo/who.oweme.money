@@ -1,44 +1,56 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { elementToDataUrl, dataURLtoBlob, shareImage, downloadImage } from './imageUtils';
 
-// Mock browser APIs
-global.URL.createObjectURL = vi.fn();
-global.URL.revokeObjectURL = vi.fn();
+// Setup global mocks
+beforeEach(() => {
+  // Mock browser APIs
+  global.URL.createObjectURL = vi.fn();
+  global.URL.revokeObjectURL = vi.fn();
 
-// Mock window.html2canvas since we're loading it from CDN
-vi.stubGlobal('html2canvas', vi.fn().mockResolvedValue({
-  toDataURL: vi.fn().mockReturnValue('mock-data-url')
-}));
+  // Mock window.html2canvas since we're loading it from CDN
+  vi.stubGlobal('html2canvas', vi.fn().mockResolvedValue({
+    toDataURL: vi.fn().mockReturnValue('mock-data-url')
+  }));
+});
 
-// Mock file-saver
-vi.mock('file-saver', () => ({
-  saveAs: vi.fn()
-}));
+// Mock file-saver outside the tests
+vi.mock('file-saver', () => {
+  return {
+    saveAs: vi.fn()
+  };
+});
 
 describe('imageUtils', () => {
-  // Setup mock DOM element
-  const mockElement = document.createElement('div');
-  mockElement.textContent = 'Test Element';
+  // Setup variables
+  let mockElement: HTMLDivElement;
+  let originalCreateElement: typeof document.createElement;
 
   // Mock data URL for testing
   const mockDataUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
 
   beforeEach(() => {
+    // Reset the DOM
     document.body.innerHTML = '';
     vi.clearAllMocks();
     
+    // Store original implementation before any mocking
+    originalCreateElement = document.createElement.bind(document);
+    
+    // Create a test element
+    mockElement = originalCreateElement('div');
+    mockElement.textContent = 'Test Element';
+    
     // Mock document.createElement for script tag
-    const originalCreateElement = document.createElement;
-    vi.spyOn(document, 'createElement').mockImplementation((tagName) => {
+    vi.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
       if (tagName === 'script') {
-        const scriptEl = document.createElement('script');
+        const scriptEl = originalCreateElement('script');
         // Simulate script loading
         setTimeout(() => {
-          if (scriptEl.onload) scriptEl.onload({} as Event);
+          if (scriptEl.onload) scriptEl.onload(new Event('load'));
         }, 0);
         return scriptEl;
       }
-      return originalCreateElement.call(document, tagName);
+      return originalCreateElement(tagName);
     });
     
     // Mock appendChild to avoid actually appending scripts
@@ -83,7 +95,7 @@ describe('imageUtils', () => {
       // Mock console.error
       const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       
-      // Test should not throw, but return undefined or a placeholder
+      // Test should throw with the expected error
       await expect(elementToDataUrl(mockElement)).rejects.toThrow('canvas error');
       
       expect(consoleSpy).toHaveBeenCalled();
@@ -98,13 +110,13 @@ describe('imageUtils', () => {
       const clickSpy = vi.fn();
       
       // Mock the created anchor element with proper HTMLAnchorElement type
-      const mockAnchor = document.createElement('a');
+      const mockAnchor = originalCreateElement('a') as HTMLAnchorElement;
       mockAnchor.href = '';
       mockAnchor.download = '';
-      // Replace the click method
       mockAnchor.click = clickSpy;
       
-      createElementSpy.mockReturnValue(mockAnchor);
+      // Override the mock for this specific test
+      createElementSpy.mockReturnValueOnce(mockAnchor);
       
       // Call the function
       downloadImage(mockDataUrl, 'test.png');
@@ -119,7 +131,7 @@ describe('imageUtils', () => {
     it('should handle errors gracefully', () => {
       // Create a spy on createElement that throws an error
       const createElementSpy = vi.spyOn(document, 'createElement');
-      createElementSpy.mockImplementation(() => {
+      createElementSpy.mockImplementationOnce(() => {
         throw new Error('createElement error');
       });
       

@@ -49,10 +49,11 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
   const handleShareImage = async (element: HTMLElement) => {
     try {
       setIsProcessing(true);
+      console.log('element', element);
       
       // Convert element to image data URL
       const dataUrl = await elementToDataUrl(element);
-      
+      console.log('dataUrl', dataUrl);
       // Share the image
       await shareImage(dataUrl, 'who-owe-me-money-summary.png');
       
