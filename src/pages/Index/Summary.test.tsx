@@ -8,7 +8,7 @@ import * as imageUtils from '../../utils/imageUtils';
 
 // Mock imageUtils functions
 vi.mock('../../utils/imageUtils', () => ({
-  elementToDataUrl: vi.fn().mockResolvedValue('mock-data-url'),
+  elementToDataUrl: vi.fn().mockImplementation(() => Promise.resolve('mock-data-url')),
   shareImage: vi.fn().mockResolvedValue(undefined)
 }));
 

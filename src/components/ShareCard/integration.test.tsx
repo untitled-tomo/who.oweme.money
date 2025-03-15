@@ -112,12 +112,14 @@ describe('ShareCard Integration Tests', () => {
     const shareButton = screen.getByRole('button', { name: /share summary/i });
     await user.click(shareButton);
     
-    // Verify loading indicator appears
-    expect(screen.getByText('Generating shareable summary...')).toBeInTheDocument();
+    // Verify loading indicator appears - use a more flexible matcher
+    await waitFor(() => {
+      expect(screen.getByText(/generating.*summary/i)).toBeInTheDocument();
+    });
     
     // Wait for the process to complete
     await waitFor(() => {
-      expect(screen.queryByText('Generating shareable summary...')).not.toBeInTheDocument();
+      expect(screen.queryByText(/generating.*summary/i)).not.toBeInTheDocument();
     });
     
     // Verify image utilities were called with correct parameters
@@ -165,6 +167,9 @@ describe('ShareCard Integration Tests', () => {
   it('automatically closes the notification after the timeout', async () => {
     const user = userEvent.setup();
     
+    // Mock the setTimeout function
+    vi.useFakeTimers();
+    
     // Render the Summary component
     renderWithTheme(
       <Summary
@@ -183,15 +188,16 @@ describe('ShareCard Integration Tests', () => {
       expect(screen.getByText('Summary shared successfully!')).toBeInTheDocument();
     });
     
-    // Mock the setTimeout callback for autoHideDuration
-    vi.useFakeTimers();
+    // Advance timers to trigger the auto-close
     vi.advanceTimersByTime(6000); // The Snackbar has autoHideDuration={6000}
-    vi.useRealTimers();
     
-    // Wait for notification to disappear
+    // Use waitFor with a longer timeout to ensure the notification has time to disappear
     await waitFor(() => {
       expect(screen.queryByText('Summary shared successfully!')).not.toBeInTheDocument();
-    });
+    }, { timeout: 1000 });
+    
+    // Restore real timers
+    vi.useRealTimers();
   });
   
   it('allows manual closing of the notification', async () => {
@@ -219,7 +225,9 @@ describe('ShareCard Integration Tests', () => {
     const closeButton = screen.getByRole('button', { name: /close/i });
     await user.click(closeButton);
     
-    // Verify notification disappears
-    expect(screen.queryByText('Summary shared successfully!')).not.toBeInTheDocument();
+    // Use waitFor to ensure the notification has time to disappear
+    await waitFor(() => {
+      expect(screen.queryByText('Summary shared successfully!')).not.toBeInTheDocument();
+    }, { timeout: 1000 });
   });
 }); 

@@ -165,17 +165,23 @@ describe('ShareCard Component', () => {
       />
     );
 
-    // The table should only show people who owe money (not the payer)
-    const tableRows = screen.getAllByRole('row');
+    // The table can have multiple tables (one for owed amounts, one for menu items)
+    // Look specifically for the Person and Amount Owed header cells to find the right table
+    const personHeader = screen.getByText('Person');
+    const amountOwedHeader = screen.getByText(/Amount Owed/i);
     
-    // Skip header row
-    const dataRows = tableRows.slice(1);
+    // Get the table containing these headers
+    const owedTable = personHeader.closest('table');
+    expect(owedTable).toBeTruthy();
+    
+    // Get all rows in this table
+    const tableRows = owedTable!.querySelectorAll('tbody tr');
     
     // There should be 2 rows (for Bob and Charlie), not 3
-    expect(dataRows.length).toBe(2);
+    expect(tableRows.length).toBe(2);
     
     // Alice (payer) should not appear in the owed amounts list
-    const aliceRow = dataRows.find(row => row.textContent?.includes('Alice'));
+    const aliceRow = Array.from(tableRows).find(row => row.textContent?.includes('Alice'));
     expect(aliceRow).toBeUndefined();
   });
 
