@@ -4,10 +4,17 @@ import ShareCard from '../../components/ShareCard/ShareCard';
 import { elementToDataUrl, shareImage } from '../../utils/imageUtils';
 import SEO from '../../components/SEO';
 
+interface MenuItem {
+  name: string;
+  amount: number;
+  quantity?: number;
+  peopleInvolved: string[];
+}
+
 interface SummaryProps {
   people: Record<string, string>;
   taxRate: number;
-  menu: { name: string; amount: number; peopleInvolved: string[] }[];
+  menu: MenuItem[];
   onDone?: () => void; // Optional callback when Done is clicked
   onPrevious?: () => void; // Optional callback for Previous button
 }

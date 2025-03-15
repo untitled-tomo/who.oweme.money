@@ -5,6 +5,7 @@ import { useTheme } from '@mui/material';
 interface MenuItem {
   name: string;
   amount: number;
+  quantity?: number;
   peopleInvolved: string[];
 }
 

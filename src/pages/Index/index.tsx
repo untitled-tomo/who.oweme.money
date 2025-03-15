@@ -9,6 +9,7 @@ import SEO from '../../components/SEO';
 interface MenuItem {
   name: string;
   amount: number;
+  quantity: number;
   peopleInvolved: string[];
 }
 
@@ -47,8 +48,10 @@ const Index: React.FC = () => {
 
   const prev = () => setCurrent((prev) => prev - 1);
 
-  const handleAddOrEditItem = (name: string, amount: number, peopleInvolved: string[]) => {
-    const newItem: MenuItem = { name, amount, peopleInvolved };
+  const handleAddOrEditItem = (name: string, cost: number, quantity: number, peopleInvolved: string[]) => {
+    // Calculate total amount based on cost and quantity
+    const amount = cost * quantity;
+    const newItem: MenuItem = { name, amount, quantity, peopleInvolved };
 
     if (editingIndex !== null) {
       setMenu((prevMenu) => {
