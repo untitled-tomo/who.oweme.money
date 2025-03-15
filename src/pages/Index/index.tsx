@@ -28,10 +28,22 @@ const Index: React.FC = () => {
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
   const [taxRate, setTaxRate] = useState<number>(10); // Example tax rate
+  const [confirmNavigationOpen, setConfirmNavigationOpen] = useState(false);
   const steps = ['People', 'Menu', 'Summary'];
 
   // Ref for PeopleForm
   const peopleFormRef = useRef<{ validate: () => boolean } | null>(null);
+
+  const resetState = () => {
+    setMenu([]);
+    setTaxRate(10);
+    setEditingItem(null);
+    setEditingIndex(null);
+    setDialogOpen(false);
+    setDeleteDialogOpen(false);
+    setItemToDelete(null);
+    setAlertMessage(null);
+  };
 
   const next = () => {
     if (current === 0) {
@@ -46,7 +58,25 @@ const Index: React.FC = () => {
     setCurrent((prev) => prev + 1);
   };
 
-  const prev = () => setCurrent((prev) => prev - 1);
+  const prev = () => {
+    if (current === 1 && menu.length > 0) {
+      setConfirmNavigationOpen(true);
+    } else {
+      handlePrevConfirm();
+    }
+  };
+
+  const handlePrevConfirm = () => {
+    setCurrent((prev) => prev - 1);
+    if (current === 1) {
+      resetState();
+    }
+    setConfirmNavigationOpen(false);
+  };
+
+  const handlePrevCancel = () => {
+    setConfirmNavigationOpen(false);
+  };
 
   const handleAddOrEditItem = (name: string, cost: number, quantity: number, peopleInvolved: string[]) => {
     // Calculate total amount based on cost and quantity
@@ -193,6 +223,23 @@ const Index: React.FC = () => {
             <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
             <Button onClick={confirmDelete} color="error">
               Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Navigation Confirmation Dialog */}
+        <Dialog
+          open={confirmNavigationOpen}
+          onClose={handlePrevCancel}
+        >
+          <DialogTitle>Confirm Navigation</DialogTitle>
+          <DialogContent>
+            Are you sure you want to go back? Your menu progress will be lost.
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handlePrevCancel}>Cancel</Button>
+            <Button onClick={handlePrevConfirm} color="error">
+              Go Back
             </Button>
           </DialogActions>
         </Dialog>
