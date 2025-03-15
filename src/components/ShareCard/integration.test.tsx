@@ -90,6 +90,16 @@ describe('ShareCard Integration Tests', () => {
   it('integrates with Summary component to provide a complete sharing flow', async () => {
     const user = userEvent.setup();
     
+    // Mock the Date object
+    const mockDate = new Date('2024-03-15T14:30:00');
+    const realDate = global.Date;
+    global.Date = class extends Date {
+      constructor() {
+        super();
+        return mockDate;
+      }
+    } as any;
+    
     // Render the Summary component (which contains ShareCard when a payer is selected)
     renderWithTheme(
       <Summary
@@ -126,11 +136,14 @@ describe('ShareCard Integration Tests', () => {
     expect(imageUtils.elementToDataUrl).toHaveBeenCalled();
     expect(imageUtils.shareImage).toHaveBeenCalledWith(
       'mock-data-url',
-      'who-owe-me-money-summary.png'
+      'who_oweme_money_2024_03_15_14_30.png'
     );
     
     // Verify success message appears
     expect(screen.getByText('Summary shared successfully!')).toBeInTheDocument();
+
+    // Restore the real Date object
+    global.Date = realDate;
   });
   
   it('handles errors gracefully in the integration flow', async () => {

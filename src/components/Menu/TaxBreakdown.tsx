@@ -1,8 +1,15 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { Box, Paper, Slider, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
 
+interface MenuItem {
+  name: string;
+  amount: number;
+  quantity?: number;
+  peopleInvolved: string[];
+}
+
 interface TaxBreakdownProps {
-  menu: { name: string; amount: number; peopleInvolved: string[] }[];
+  menu: MenuItem[];
   taxRate: number;
   isSummary:Boolean;
   people: Record<string, string>;

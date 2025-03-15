@@ -14,6 +14,7 @@ import TaxBreakdown from '@/components/Menu/TaxBreakdown';
 interface MenuItem {
   name: string;
   amount: number;
+  quantity: number;
   peopleInvolved: string[];
 }
 
