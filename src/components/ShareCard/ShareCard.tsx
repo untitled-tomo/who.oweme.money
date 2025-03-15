@@ -74,6 +74,10 @@ const ShareCard: React.FC<ShareCardProps> = ({ people, menu, taxRate, payer, onS
           backgroundColor: theme.palette.background.paper,
           maxWidth: '600px',
           boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+          position: 'relative',
+          overflow: 'hidden',
+          transform: 'translateZ(0)',
+          backfaceVisibility: 'hidden',
         }}
       >
         <Box sx={{ mb: 3, textAlign: 'center' }}>
