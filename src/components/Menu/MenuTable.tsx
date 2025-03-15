@@ -35,7 +35,7 @@ const MenuTable: React.FC<MenuTableProps> = ({ isSummary=false, menu, people, on
         <TableBody>
           {menu.map((item, index) => (
             <TableRow key={index}>
-              <TableCell sx={{ position: 'sticky', left: '0', zIndex: 1, backgroundColor: 'white', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '110px' }}>{item.name}</TableCell>
+              <TableCell sx={{ position: 'sticky', left: '0', zIndex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '110px' }}>{item.name}</TableCell>
               <TableCell>{item.amount.toFixed(2)}</TableCell>
               {Object.entries(people).map(([id, name]) => (
                 <TableCell key={id}>

@@ -88,7 +88,7 @@ const Summary: React.FC<SummaryProps> = ({ people, menu, taxRate = 0 }) => {
       >
         <Box>
           <FormControl fullWidth sx={{ mb: 2, minWidth: '180px' }}>
-            <InputLabel sx={{background:'#f9f9f9'}}>Who Paid the Bill?</InputLabel>
+            <InputLabel>Who Paid the Bill?</InputLabel>
             <Select value={payer} onChange={handlePayerChange}>
               {Object.entries(people).map(([id, name]) => (
                 <MenuItem key={id} value={id}>
