@@ -158,6 +158,16 @@ describe('Summary Component', () => {
   });
 
   it('processes sharing when the share button is clicked', async () => {
+    // Mock the Date object
+    const mockDate = new Date('2024-03-15T14:30:00');
+    const realDate = global.Date;
+    global.Date = class extends Date {
+      constructor() {
+        super();
+        return mockDate;
+      }
+    } as any;
+
     renderWithTheme(
       <Summary
         people={mockPeople}
@@ -177,13 +187,16 @@ describe('Summary Component', () => {
     expect(imageUtils.elementToDataUrl).toHaveBeenCalled();
     expect(imageUtils.shareImage).toHaveBeenCalledWith(
       'mock-data-url',
-      'who-owe-me-money-summary.png'
+      'who_oweme_money_2024_03_15_14_30.png'
     );
     
     // Check if success message is shown
     await waitFor(() => {
       expect(screen.getByText('Summary shared successfully!')).toBeInTheDocument();
     });
+
+    // Restore the real Date object
+    global.Date = realDate;
   });
 
   it('shows error message when sharing fails', async () => {
